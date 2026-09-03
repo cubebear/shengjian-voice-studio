@@ -1,85 +1,89 @@
-# 声笺 ShengJian
+# ShengJian
 
-面向 Intel Mac 的本地语音工作室。用自己的录音克隆音色，导入文稿生成语音，在中文图形界面里修改分段、调整音频并导出 WAV。
+**English** | [简体中文](README.zh-CN.md)
 
-**当前为 0.1.0 实验版本。** 应用编译目标是 Intel x86_64 / macOS 10.15，但尚未在 2019 Mac Pro 或旧版 macOS 上实测。已完成的生成测试来自 Apple Silicon + Rosetta，不代表真实 Intel 设备的性能或音色相似度。
+[Download](https://github.com/cubebear/shengjian-voice-studio/releases/tag/v0.1.0) · [Quick start](#quick-start) · [中文使用教程](使用说明.md) · [Release notes](docs/RELEASE_NOTES.md)
 
-这是独立的社区项目，采用 [Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS) 模型和 [gabriele-mastrapasqua/qwen3-tts](https://github.com/gabriele-mastrapasqua/qwen3-tts) 的 C 推理实现；不是 Qwen 官方应用，也不代表与模型发布方有合作或背书关系。
+A local voice cloning and text-to-speech studio for Intel Macs. Use your own recording as a voice reference, import a manuscript, regenerate individual segments, adjust audio, and export WAV files from a desktop interface.
 
-![声笺中文界面](docs/screenshot.png)
+**Version 0.1.0 is experimental.** The application targets Intel x86_64 and macOS 10.15 at build time, but has **not** been tested on a 2019 Mac Pro or older macOS releases. The completed inference test ran on Apple Silicon through Rosetta; it does not establish performance or voice similarity on Intel hardware. The desktop interface is currently in Chinese.
 
-## 能做什么
+This is an independent community project using [Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS) models and the C inference implementation from [gabriele-mastrapasqua/qwen3-tts](https://github.com/gabriele-mastrapasqua/qwen3-tts). It is not an official Qwen application and is not affiliated with or endorsed by the model publisher.
 
-- **本地声音克隆**：导入本人或获得授权的录音和对应文字，保存、复用声音档案。
-- **文稿转音频**：导入 TXT、Markdown、RTF，支持常见中文编码；自动分段、逐段重生成、合并与 WAV 导出。
-- **音频调整**：裁剪、音量、峰值归一化、淡入淡出、变速与变调，调整结果保存为副本。
-- **模型管理**：魔搭 ModelScope（中国大陆，默认）与 Hugging Face 可选；显式切换来源、断点续传、固定版本、大小及哈希校验；也可导入已有的官方完整模型目录。
-- **推理设置**：语言、线程、量化、随机种子、采样参数、参考音和部分高级选项。
-- **自动准备运行环境**：内置原生 C 引擎；首次启动校验并安装到应用私有目录，损坏时可修复。无需安装 Python、PyTorch、Docker 或 Homebrew，也不自动更改系统环境。
+![ShengJian desktop interface](docs/screenshot.png)
 
-本版没有训练、微调、GPU 加速、实时流式播放、任意模型架构支持或在线语音服务。界面覆盖的是本项目接入的推理能力，不是上游模型和命令行工具的全部功能。
+## Features
 
-## 下载与第一次使用
+- **Local voice cloning:** import your own or an explicitly authorized recording and its transcript; save and reuse voice profiles.
+- **Manuscript to audio:** import TXT, Markdown, and RTF with common Chinese text encodings; split text into segments, regenerate individual segments, merge, and export WAV.
+- **Audio adjustments:** trim, change gain, normalize peaks, add fades, and adjust speed or pitch. Adjusted audio is saved as a copy.
+- **Model management:** choose ModelScope (mainland China, the default) or Hugging Face; resume downloads, pin revisions, and verify file sizes and hashes. Import an existing complete official model directory as an alternative.
+- **Inference controls:** language, CPU threads, quantization, sampling parameters, random seed, reference audio, and selected advanced options.
+- **Automatic runtime setup:** bundled native C engines are verified and installed into the application's own data directory on first launch, and repaired if damaged. No Python, PyTorch, Docker, or Homebrew installation is needed to run the app. It does not automatically change the system environment.
 
-在 [Releases](https://github.com/cubebear/shengjian-voice-studio/releases) 页面下载 `ShengJian-Intel-0.1.zip` 和 `SHA256SUMS.txt`；也可以按下文从源码构建。
+This version does not provide training, fine-tuning, GPU acceleration, real-time streaming, arbitrary model architecture support, or an online voice service. Its interface covers the inference features integrated into this project, not every upstream model or CLI capability.
 
-1. 核对下载文件的 SHA-256，解压并将 `ShengJian-Intel.app` 拖入“应用程序”。
-2. 本版只有临时签名，没有 Apple Developer ID 签名或公证。确认来源及哈希后，如系统拦截，可使用 Finder 右键“打开”或系统安全设置允许这一个应用。不要全局关闭 Gatekeeper；如果提示文件损坏，先重新下载并核对文件。
-3. 启动，等待显示“本地引擎就绪”。“环境与帮助”可查看检测结果和诊断日志。
-4. 在“模型管理”选择下载来源，先下载 **0.6B Base**。所需文件约 2.52GB，建议为下载及临时文件留出至少 5GB 空间。
-5. 准备一段只有自己说话、没有音乐的清晰录音，在工作室选择录音并填入对应原文。
-6. 输入一句短文，使用初始参数生成，试听后再尝试长文。CPU 生成可能明显慢于音频实际时长。
+## Quick start
 
-详细安装、录音准备、参数说明、模型导入目录结构、分段修订和故障处理见 [手把手使用说明](使用说明.md)。
+Download `ShengJian-Intel-0.1.zip` and `SHA256SUMS.txt` from [Releases](https://github.com/cubebear/shengjian-voice-studio/releases), or build from source as described below.
 
-## 适用设备与测试范围
+1. Verify the archive's SHA-256, extract it, and move `ShengJian-Intel.app` into Applications.
+2. The app is ad-hoc signed, without Apple Developer ID signing or notarization. After verifying its source and hash, use Finder's **Open** command or the system security settings to allow this individual app if macOS blocks it. Do not disable Gatekeeper globally. If macOS reports a damaged file, download it again and verify it first.
+3. Launch the app and wait for **“本地引擎就绪”** (local engine ready). **“环境与帮助”** (environment and help) shows diagnostics.
+4. In **“模型管理”** (model management), choose a download source and start with **0.6B Base**. The required files total about 2.52 GB; allow at least 5 GB for downloads and temporary files.
+5. Prepare a clean recording with only your voice and no background music. Select it in the studio and enter its exact transcript.
+6. Generate one short sentence with the initial settings, listen to the result, and then try longer text. CPU generation may be substantially slower than the duration of the resulting audio.
 
-| 项目 | 当前情况 |
+The [detailed user guide in Chinese](使用说明.md) covers installation, recording preparation, parameters, model directory structure, segment editing, and troubleshooting.
+
+## Hardware and validation
+
+| Item | Current status |
 |---|---|
-| 目标设备 | Intel Mac，重点面向 2019 Mac Pro 的 CPU 推理 |
-| 最低编译目标 | macOS 10.15；不是已经实测的最低兼容版本 |
-| CPU 引擎 | AVX2/FMA 与兼容引擎；未检测到 AVX2 时自动选择兼容引擎 |
-| 内存 | 建议至少 16GB 起步，视模型与文本长度增加；未经目标设备测量 |
-| 显卡 | 本版不使用 Mac Pro 的 AMD 显卡 |
-| 已测环境 | Apple Silicon，macOS 26.6.2，经 Rosetta 运行 x86_64 应用 |
-| 已测真实生成 | 0.6B Base，使用电脑合成的参考音，输出有效的 3.36 秒 WAV |
-| 其他检查 | 26 项核心检查通过；两种引擎数值自检、原生启动和运行时修复通过 |
+| Intended hardware | Intel Macs, with a focus on CPU inference on the 2019 Mac Pro |
+| Minimum compilation target | macOS 10.15; this is not a verified minimum supported OS |
+| CPU engines | AVX2/FMA and a compatibility engine; the latter is selected when AVX2 is not detected |
+| Memory | At least 16 GB is recommended as a starting point, with more for larger models and longer text; not measured on the target hardware |
+| Graphics | The Mac Pro's AMD GPU is not used by this version |
+| Tested environment | Apple Silicon, macOS 26.6.2, running the x86_64 app through Rosetta |
+| Tested model inference | 0.6B Base with a computer-synthesized reference, producing a valid 3.36-second WAV |
+| Other checks | 26 core checks passed; both engine numerical self-tests, native startup, and runtime repair passed |
 
-1.7B、CustomVoice、VoiceDesign 及部分实验参数虽已接入，但没有全部下载模型后逐一完成生成测试。Hugging Face 清单逻辑已测，真实大文件下载在测试网络超时；魔搭完成了 0.6B Base 的真实下载及校验。详见 [验证报告](验证报告.md)。
+The 1.7B, CustomVoice, VoiceDesign, and some experimental controls are integrated but have not all been validated through full model downloads and generation. Hugging Face manifest handling was tested, but large-file downloading timed out on the test network. A real 0.6B Base download from ModelScope completed and passed validation. See the [validation report in Chinese](验证报告.md).
 
-## 模型与下载源
+## Models and download sources
 
-模型权重**不随源码和安装包分发**。下载时会访问所选平台和它使用的文件 CDN；不会自动切到另一个平台。中国大陆网络是否可达仍取决于地区、运营商和时间，不作永久可用保证。
+Model weights are **not bundled with the source code or application**. Downloading contacts the selected platform and its file CDN; the app does not silently switch platforms. Availability in mainland China still depends on location, network provider, and time, and is not guaranteed.
 
-| 模型 | 用途 | 魔搭 | Hugging Face |
+| Model | Purpose | ModelScope | Hugging Face |
 |---|---|---|---|
-| 0.6B Base | 优先试用的声音克隆模型 | [下载](https://modelscope.cn/models/Qwen/Qwen3-TTS-12Hz-0.6B-Base) | [下载](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-Base) |
-| 1.7B Base | 更大的声音克隆模型 | [下载](https://modelscope.cn/models/Qwen/Qwen3-TTS-12Hz-1.7B-Base) | [下载](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-Base) |
-| 0.6B CustomVoice | 预设说话人 | [下载](https://modelscope.cn/models/Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice) | [下载](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice) |
-| 1.7B CustomVoice | 预设说话人与风格指令 | [下载](https://modelscope.cn/models/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice) | [下载](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice) |
-| 1.7B VoiceDesign | 文字描述设计音色 | [下载](https://modelscope.cn/models/Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign) | [下载](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign) |
+| 0.6B Base | Recommended starting point for voice cloning | [Download](https://modelscope.cn/models/Qwen/Qwen3-TTS-12Hz-0.6B-Base) | [Download](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-Base) |
+| 1.7B Base | Larger voice cloning model | [Download](https://modelscope.cn/models/Qwen/Qwen3-TTS-12Hz-1.7B-Base) | [Download](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-Base) |
+| 0.6B CustomVoice | Preset speakers | [Download](https://modelscope.cn/models/Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice) | [Download](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice) |
+| 1.7B CustomVoice | Preset speakers and style instructions | [Download](https://modelscope.cn/models/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice) | [Download](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice) |
+| 1.7B VoiceDesign | Design a voice using a text description | [Download](https://modelscope.cn/models/Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign) | [Download](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign) |
 
-导入格式是官方 BF16 safetensors **完整目录**，不支持仅选择单个权重文件、LFS 指针、GGUF 或 MLX 转换版。界面的量化是引擎运行时量化。模型许可证独立于本应用，请遵守对应模型仓库的许可与声明。
+Imports require a **complete official BF16 safetensors directory**. A standalone weight file, Git LFS pointer, GGUF file, or MLX conversion is not supported. The quantization setting applies inside the inference engine at runtime. Model licenses are independent of the application license; follow each model repository's license and notices.
 
-## 隐私、授权与安全
+## Privacy, consent, and security
 
-录音、文稿、声音档案和生成结果保存在本机 `~/Library/Application Support/ShengJianStudio`。应用不实现云端推理或遥测，也不主动上传这些内容。模型下载会向所选服务暴露正常网络请求信息；系统备份、同步、浏览器或用户主动分享不受本项目控制。
+Recordings, manuscripts, voice profiles, and generated audio are stored locally under `~/Library/Application Support/ShengJianStudio`. The app does not implement cloud inference or telemetry and does not proactively upload this content. Model downloads expose ordinary network request information to the selected service. System backups, synchronization, browser behavior, and sharing initiated by the user are outside this project's control.
 
-只克隆本人或明确授权的声音。发布合成音频时清楚说明其合成性质，不用于欺诈、冒充真人或绕过声纹认证。声音向量与 `.qvoice` 也属于需要保护的素材；`.qvoice` 还可能包含少量模型权重，分享它时要同时考虑授权和模型许可。
+Clone only your own voice or a voice you have explicit permission to use. Clearly disclose that shared audio is synthetic. Do not use it for fraud, deceptive impersonation, or bypassing voice authentication. Voice vectors and `.qvoice` files also need protection. A `.qvoice` file may contain some source model weights, so sharing one requires considering both voice consent and the model license.
 
-[负责任使用说明](RESPONSIBLE_USE.md) 是用途与法律风险提示，不给 MIT 许可证增加字段限制；开源许可证也不授予任何人的声音、肖像或身份使用权。请勿导入来源不明的模型与声音文件；第三方原生解析器尚未经过完整安全审计。更多说明见 [SECURITY.md](SECURITY.md)。
+The [responsible-use guidance (Chinese)](RESPONSIBLE_USE.md) explains risks without adding field-of-use restrictions to the MIT license. An open-source license does not grant rights to anyone's voice, likeness, or identity. Do not import untrusted model or voice files: the third-party native parsers have not undergone a complete security audit. See the [security and privacy notes (Chinese)](SECURITY.md).
 
-## 从源码构建
+## Build from source
 
-需要 macOS、Xcode Command Line Tools 和 Python 3；这些是**构建工具**，最终应用运行不需要 Python。
+Building requires macOS, Xcode Command Line Tools, and Python 3. These are **build dependencies**; the resulting application does not need Python to run.
 
 ```bash
 python3 build.py
 ```
 
-产物为 `dist/ShengJian-Intel.app`。脚本从随仓库提供的固定版本源码构建两个 Intel 引擎、编译 Swift、打包本地界面和许可证，再进行临时签名。不下载模型，不公证，不发布。
+The output is `dist/ShengJian-Intel.app`. The script builds both Intel engines from the bundled, pinned source snapshot, compiles Swift, packages the local interface and licenses, and ad-hoc signs the app. It does not download models, notarize, or publish anything.
 
-核心测试：
+Run the core checks with:
 
 ```bash
 mkdir -p .build/test-cache .build/test-artifacts
@@ -90,12 +94,23 @@ xcrun swiftc -swift-version 5 -target x86_64-apple-macos10.15 \
 .build/core-tests "$PWD/.build/test-artifacts" "$PWD/Tests/Fixtures"
 ```
 
-音频测试需要正常桌面会话中的 macOS 音频服务；Apple Silicon 上运行此 Intel 测试还需要 Rosetta。[构建与结构说明](docs/BUILD.md) 包含 QA 构建入口。仓库中的 `Verification/` 保存历史测试证据，不代表每一台设备都会通过。
+Audio checks require macOS audio services in a normal desktop session. Running these Intel tests on Apple Silicon also requires Rosetta. The [build and architecture notes](docs/BUILD.md) describe the QA build entry point. `Verification/` contains historical test evidence, not a guarantee that every device will pass.
 
-## 许可证与致谢
+## Documentation / 中文说明
 
-本项目原创的界面、Swift 封装及构建脚本采用 [MIT](LICENSE)。`Vendor/` 中第三方源码保留原有许可证；不能用本仓库根目录的 MIT 替代它们。包括 C 推理引擎、ingot、llama.cpp/ggml 派生量化表、LZ4 以及随源码保留的 KleidiAI 声明，详见 [第三方声明](THIRD_PARTY_NOTICES.md)。
+| English | 简体中文 |
+|---|---|
+| [Project overview](README.md) | [项目说明](README.zh-CN.md) |
+| [Release notes](docs/RELEASE_NOTES.md) | [发行说明](docs/RELEASE_NOTES.zh-CN.md) |
+| [Quick start](#quick-start) | [完整使用教程](使用说明.md) |
+| [Hardware and validation](#hardware-and-validation) | [验证报告](验证报告.md) |
 
-Qwen3-TTS 模型由 Qwen 团队发布，使用其独立的 Apache-2.0 许可。感谢所有上游贡献者。项目按原样提供，不承诺特定设备兼容性、克隆质量或特定用途适用性。
+The interface and the existing detailed Chinese guides remain unchanged. Use the language links at the top of each overview or release-notes page to switch languages.
 
-问题反馈时请提供应用版本、macOS 版本、CPU/内存、所选模型及已脱敏的错误信息。请勿在公开 Issue 上传自己的录音、声音档案、完整文稿或密钥。
+## License and acknowledgements
+
+The original interface, Swift wrapper, and build scripts are licensed under [MIT](LICENSE). Third-party code in `Vendor/` retains its own licenses; the root MIT license does not replace them. This includes the C inference engine, ingot, tables derived from llama.cpp/ggml, LZ4, and KleidiAI notices retained with the source. See [third-party notices (Chinese)](THIRD_PARTY_NOTICES.md).
+
+Qwen3-TTS models are published by the Qwen team under their separate Apache-2.0 license. Thanks to all upstream contributors. This project is provided as is, without guarantees of hardware compatibility, cloning quality, or suitability for a particular purpose.
+
+When reporting a problem, include the application version, macOS version, CPU and memory, selected model, and redacted error information. Do not post private recordings, voice profiles, complete manuscripts, or credentials in public issues.

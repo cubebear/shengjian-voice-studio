@@ -1,21 +1,27 @@
-# 声笺 0.1.0 · 实验版
+# ShengJian 0.1.0 — Experimental release
 
-Intel Mac 本地语音工作室，提供声音克隆、文稿导入、分段生成、音频调整及双来源模型管理。下载和准备模型后可在本地生成，不需要安装 Python、Docker 或 Homebrew。
+**English** | [简体中文](https://github.com/cubebear/shengjian-voice-studio/blob/main/docs/RELEASE_NOTES.zh-CN.md)
 
-## 安装
+[Project overview](https://github.com/cubebear/shengjian-voice-studio#readme) · [中文项目说明](https://github.com/cubebear/shengjian-voice-studio/blob/main/README.zh-CN.md) · [中文使用教程](https://github.com/cubebear/shengjian-voice-studio/blob/main/%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md)
 
-下载 `ShengJian-Intel-0.1.zip`，核对同页 `SHA256SUMS.txt`，解压后打开应用。模型不随安装包分发；首次试用推荐在“模型管理”选择魔搭或 Hugging Face 下载 0.6B Base。
+A local voice studio for Intel Macs, with voice cloning, manuscript import, segmented generation, audio adjustments, and a choice of ModelScope or Hugging Face for model downloads. Once the model is available locally, generation does not require Python, Docker, or Homebrew. The desktop interface is currently in Chinese.
 
-应用只有临时签名，没有 Developer ID 签名或公证。仅在确认来源并核对哈希后，通过系统对单个应用的允许入口打开；不要全局关闭 Gatekeeper。
+## Installation
 
-## 请先了解
+Download **[ShengJian-Intel-0.1.zip](https://github.com/cubebear/shengjian-voice-studio/releases/download/v0.1.0/ShengJian-Intel-0.1.zip)**, verify it against **[SHA256SUMS.txt](https://github.com/cubebear/shengjian-voice-studio/releases/download/v0.1.0/SHA256SUMS.txt)**, extract it, and open the application. Model weights are not included. For a first test, download **0.6B Base** from ModelScope or Hugging Face in the model management screen.
 
-- 编译目标为 macOS 10.15 / x86_64，尚未在 2019 Mac Pro 或旧 macOS 实测。
-- 已完成 Rosetta 下的 0.6B Base 真实生成、26 项核心测试、两种引擎数值自检及运行时修复测试。
-- 参考音由电脑合成，未验证本人音色的克隆相似度；CPU 性能不能按本次 Rosetta 结果推算。
-- 1.7B、CustomVoice、VoiceDesign 及实验控制没有全部完成真实生成验收；Hugging Face 实际下载仍需目标网络验证。
-- 仅提供推理，不包括训练、GPU 加速或实时流式播放。
+The app is ad-hoc signed, without Apple Developer ID signing or notarization. Only allow this individual app through macOS security controls after confirming its source and hash. Do not disable Gatekeeper globally.
 
-请仅使用本人或明确授权的声音，对外分享时标注合成性质。源码及发行包不包含个人录音、声音档案或模型权重。保留了第三方许可和来源声明。
+## Before you start
 
-详见仓库 README、使用说明、验证报告和第三方声明。
+- The compilation target is macOS 10.15 / x86_64. **A 2019 Mac Pro and older macOS releases have not been tested.**
+- Completed validation includes real 0.6B Base inference under Rosetta, 26 core checks, numerical self-tests for both engines, and runtime repair checks.
+- The reference audio was computer-synthesized. Cloning similarity to your own voice has not been evaluated, and Rosetta timings do not predict performance on Intel hardware.
+- The 1.7B, CustomVoice, VoiceDesign, and experimental controls have not all completed real generation validation. Hugging Face downloading still needs verification on the target network.
+- This version provides inference only, without training, GPU acceleration, or real-time streaming.
+
+Use only your own or explicitly authorized voices, and disclose that shared audio is synthetic. The source and release packages contain no personal recordings, voice profiles, or model weights. Third-party licenses and notices are retained.
+
+See the [README](https://github.com/cubebear/shengjian-voice-studio#readme), [Chinese user guide](https://github.com/cubebear/shengjian-voice-studio/blob/main/%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.md), [validation report (Chinese)](https://github.com/cubebear/shengjian-voice-studio/blob/main/%E9%AA%8C%E8%AF%81%E6%8A%A5%E5%91%8A.md), and [third-party notices (Chinese)](https://github.com/cubebear/shengjian-voice-studio/blob/main/THIRD_PARTY_NOTICES.md).
+
+This update changes online documentation and navigation only. The original 0.1.0 application, source attachment, checksums, and version tag remain unchanged. Use the repository links above for the latest English and Chinese documentation.
