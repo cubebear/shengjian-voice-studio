@@ -1,0 +1,54 @@
+# Build outputs
+.build/
+dist/
+*.app/
+*.o
+*.a
+*.d
+*.dSYM/
+qwen_tts
+Studio
+core-tests
+core-tests-arm
+download-test
+__pycache__/
+*.pyc
+.DS_Store
+
+# Local credentials / environments
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.venv/
+venv/
+
+# Models and personal voice / project material
+models/
+test-models/
+voices/
+jobs/
+recordings/
+userdata/
+*.safetensors
+*.gguf
+*.pt
+*.pth
+*.ckpt
+*.qvoice
+*.bin
+*.wav
+*.aiff
+*.aif
+*.mp3
+*.m4a
+*.flac
+*.caf
+*.log
+*.part
+*.zip
+job.json
+
+# Tiny upstream numerical test fixtures; not model or voice data
+!Vendor/qwen3-tts/third_party/ingot/tests/fixtures/*.bin

@@ -1,0 +1,29 @@
+PASS: PCM16 WAV roundtrip duration and amplitude
+PASS: Trim, fade and normalization preserve bounded samples
+PASS: Invalid crop rejected before write
+PASS: Join inserts exact silent interval
+PASS: Mixed sample rates rejected
+Audio rendered: 1.6s, peak 0.4011169, samples 38400
+Pitch frequency: 523.3333333333334 Hz (expected ~523 Hz)
+PASS: Offline speed/pitch rendering produces expected duration
+PASS: Cancellation prevents starting subprocess
+PASS: Active subprocess cancellation terminates the owned process
+PASS: Subprocess nonzero exit surfaced
+PASS: Unicode splitting preserves punctuation and graphemes
+PASS: UTF-8, BOM UTF-16, GB18030 imported correctly
+PASS: Model arguments keep text as one literal argument
+PASS: Base rejects missing reference
+PASS: VoiceDesign requires instruction
+PASS: 0.6B CustomVoice rejects unsupported instruction
+PASS: Unknown advanced flags rejected
+PASS: Out of range numeric settings rejected
+PASS: Voice size checked against model before execution
+PASS: Truncated qvoice rejected
+PASS: Git LFS pointer rejected as model weights
+PASS: Safetensors payload bounds validated
+PASS: Incomplete model directory fails clearly
+PASS: SHA256 file hashing stable
+PASS: ModelScope manifest uses pinned file revisions and SHA256
+PASS: Hugging Face manifest uses commit hashes, LFS SHA256 and git hashes
+PASS: Incomplete or untrusted download manifests rejected
+26 passed; 0 failed

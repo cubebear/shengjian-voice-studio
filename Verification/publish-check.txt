@@ -1,0 +1,18 @@
+声笺 0.1.0 发布准备检查
+日期：2026-09-03
+
+源码清洁目录构建：成功，Intel x86_64 / macOS 10.15 编译目标。
+签名验证：codesign --verify --deep --strict 成功；仅临时签名，未公证。
+核心检查复测：正常 macOS 音频服务权限下 26 passed; 0 failed。
+受限沙箱中有 1 项音高处理检查因系统音频组件不可用而失败；取得桌面服务访问后通过。
+发布扫描：未发现模型权重、用户录音、声音档案、私人绝对路径或常见令牌/私钥标记。
+保留 ingot 小型数值测试 .bin/.ref，非模型或声音数据。
+补充 llama.cpp MIT、KleidiAI 许可与 NOTICE；应用中保留对应声明副本。
+用户已明确授权设为公开仓库；不将本检查视为平台审批、全面安全审计或法律保证。
+此轮没有重新下载模型做完整生成；历史真实生成范围见验证报告。
+
+本次重建的 AVX2 与兼容引擎数值自检均通过：0 cases failed。
+
+本次引擎 SHA-256：
+1a83d19739d813af9c9ac7f1498aa47dc8a6f5a00048c14ca896d822a2b77895  qwen_tts
+cfdbab9f7fc761d3dfba8f4c8330e77c5c9d098b0f36d4c49c8531adfdd95dae  qwen_tts_compatible

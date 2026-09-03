@@ -1,0 +1,19 @@
+{
+  "firstLaunch": {
+    "dom": {
+      "badge": "● 本地引擎就绪",
+      "buttons": 30,
+      "models": 5,
+      "title": "声笺 · 本地语音工作室"
+    },
+    "engineReady": true,
+    "error": "",
+    "os": "Version 26.6.2 (Build 25G83)",
+    "passed": true
+  },
+  "repairPassed": true,
+  "checksums": {
+    "qwen_tts": "e553d7af051599f6c0b2bba6f906ee6df81dd10b02f46e127b4d897dd7c6cd85",
+    "qwen_tts_compatible": "d8b0699c88c7e438c76c5b27198eef49b0263ddb2d24195b2b2754ce7c51253c"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "dom" : {
+    "badge" : "● 本地引擎就绪",
+    "buttons" : 33,
+    "models" : 5,
+    "title" : "声笺 · 本地语音工作室"
+  },
+  "engineReady" : true,
+  "error" : "",
+  "generationPassed" : true,
+  "os" : "Version 26.6.2 (Build 25G83)",
+  "passed" : true
+}

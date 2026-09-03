@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'">
+<title>声笺 · 本地语音工作室</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand"><span class="brandmark">声</span><div>声笺<small>VOICE STUDIO</small></div></div>
+  <div class="nav-caption">工作空间</div>
+  <nav>
+    <button data-page="studio" class="nav active"><span>◉</span>语音工作室</button>
+    <button data-page="models" class="nav"><span>▦</span>模型管理<i id="modelCount">0</i></button>
+    <button data-page="voices" class="nav"><span>◎</span>我的声音</button>
+    <button data-page="history" class="nav"><span>◷</span>生成记录</button>
+    <button data-page="environment" class="nav"><span>⚙</span>环境与帮助</button>
+  </nav>
+  <div class="local-note"><span class="status-dot"></span>本地推理<small>声音留在你的 Mac 上<br>下载模型时才需要联网</small></div>
+  <div class="sidebar-bottom">INTEL MAC EDITION <span>0.1</span></div>
+</aside>
+<main>
+  <header><div class="breadcrumb">个人工作空间 <span>/</span> <b id="pageName">语音工作室</b></div><div class="header-right"><span id="environmentBadge" class="badge muted">正在检查环境</span><button class="icon-button" id="folderButton" title="打开输出目录">↗</button></div></header>
+  <div class="content">
+    <section class="page active" id="page-studio">
+      <div class="page-heading"><div class="eyebrow">FROM WORDS TO YOUR VOICE</div><div class="title-row"><h1>让文字，拥有你的声音。</h1><span class="tag">离线工作室</span></div><p>导入文稿、选择声音，在本地生成与调整每一段音频。</p></div>
+      <div class="studio-grid">
+        <div class="editor-column">
+          <div class="card editor-card"><div class="card-head"><h2><span class="step">01</span>文稿</h2><button class="button subtle" id="importText">＋ 导入文本</button></div>
+            <div class="document-meta"><span id="documentName">未命名文稿</span><span id="charCount">0 字</span></div>
+            <textarea id="text" class="manuscript" placeholder="在这里写下想说的话……&#10;&#10;也可以导入 TXT、Markdown 或 RTF 文件。长文会自动分段，生成后可以试听、修改并单独重生成。" spellcheck="false"></textarea>
+            <div class="editor-footer"><span>支持中文与其他 9 种语言</span><button id="sampleText" class="text-button">填入测试文稿 ↗</button></div>
+          </div>
+          <div class="card reference-card" id="referenceCard"><div class="card-head"><h2><span class="step">02</span>参考声音</h2><button class="button subtle" id="chooseReference">选择录音</button></div>
+            <div class="reference-empty" id="referenceInfo"><span class="mic-icon">◎</span><div><strong>选一段干净的本人录音</strong><p>建议 10–30 秒 · 自动转换为 24kHz 单声道</p></div></div>
+            <label class="field"><span>录音对应文字</span><textarea id="referenceText" rows="2" placeholder="填写录音中实际说出的完整文字，避免使用摘要。"></textarea></label>
+            <div class="inline-options"><label class="checkbox"><input type="checkbox" id="xvector">仅提取音色向量（不需要录音文字，表现力可能下降）</label></div>
+            <div class="voice-use"><label>或复用声音档案<select id="voiceSelect"><option value="">不使用保存的声音</option></select></label><button class="button subtle" id="saveVoice">保存当前声音</button></div>
+            <p class="small-note" id="voiceInfo">档案应与模型大小一致；0.6B 和 1.7B 不可混用。</p>
+          </div>
+          <div class="card result-card"><div class="card-head"><h2><span class="step">03</span>试听与调整</h2><button class="button subtle" id="exportAudio" disabled>导出 WAV ↗</button></div>
+            <div class="audio-label"><strong id="audioName">还没有生成音频</strong><span id="audioDuration">00:00</span></div>
+            <canvas id="waveform" width="960" height="96" aria-label="音频波形"></canvas>
+            <div class="player"><button id="play" class="play-button" disabled>▶</button><input id="seek" type="range" min="0" max="1" value="0" step="0.1" aria-label="播放位置" disabled><span id="playTime">00:00</span></div>
+            <details id="audioEdit"><summary>调整音频副本 <span>裁剪 / 音高 / 音量 / 语速</span></summary>
+              <div class="fields three"><label class="field"><span>开始（秒）</span><input id="trimStart" type="number" value="0" min="0" step="0.1"></label><label class="field"><span>结束（0 = 到结尾）</span><input id="trimEnd" type="number" value="0" min="0" step="0.1"></label><label class="field"><span>增益（dB）</span><input id="editGain" type="number" value="0" min="-24" max="12" step="1"></label><label class="field"><span>语速倍率</span><input id="editRate" type="number" value="1" min="0.5" max="2" step="0.05"></label><label class="field"><span>音高（半音）</span><input id="editPitch" type="number" value="0" min="-12" max="12" step="1"></label><label class="field"><span>淡入淡出（秒）</span><input id="editFade" type="number" value="0.03" min="0" max="2" step="0.01"></label></div>
+              <div class="edit-actions"><label class="checkbox"><input type="checkbox" id="normalize">峰值归一化</label><button class="button" id="applyEdit" disabled>应用到副本</button></div>
+              <p class="small-note">基于当前试听音频生成副本，不覆盖原始段落。再次调整会应用于当前副本。</p>
+            </details>
+          </div>
+          <div class="card segments-card" id="segmentsCard" hidden><div class="card-head"><h2>分段工作区</h2><span id="segmentStatus" class="badge muted"></span></div><p class="small-note">编辑段落后点击重生成，使用右侧当前参数及原项目的参考音频。所有段落完成后自动更新合并文件。</p><div id="segments"></div></div>
+        </div>
+        <aside class="settings-column">
+          <div class="card settings-card"><div class="card-head"><h2>声音设置</h2><span class="tiny-dot"></span></div>
+            <div class="mode-tabs" role="tablist"><button class="selected" data-mode="base">声音克隆</button><button data-mode="custom_voice">预设音色</button><button data-mode="voice_design">音色设计</button></div>
+            <label class="field"><span>语音模型</span><select id="modelSelect"></select></label>
+            <div id="modelHint" class="model-hint">先下载或导入一个模型。</div>
+            <button class="button full" id="goModels">前往模型管理 ↗</button>
+            <div class="fields two"><label class="field"><span>语言</span><select id="language"><option>Chinese</option><option>English</option><option>Japanese</option><option>Korean</option><option>German</option><option>French</option><option>Russian</option><option>Portuguese</option><option>Spanish</option><option>Italian</option></select></label><label class="field" id="speakerField"><span>预设声音</span><select id="speaker"><option value="vivian">Vivian · 女声</option><option value="serena">Serena · 女声</option><option value="uncle_fu">Uncle Fu · 男声</option><option value="dylan">Dylan · 北京口音</option><option value="eric">Eric · 成都口音</option><option value="ryan">Ryan · 英语男声</option><option value="aiden">Aiden · 英语男声</option><option value="ono_anna">Anna · 日语女声</option><option value="sohee">Sohee · 韩语女声</option></select></label></div>
+            <label class="field" id="instructionField"><span id="instructionLabel">风格指令</span><textarea id="instruction" rows="3" placeholder="例如：声音温暖，语气自然，像在和朋友聊天。"></textarea></label>
+            <div class="divider"></div>
+            <label class="slider-field"><span>生成语速 <b id="rateValue">1.00×</b></span><input id="rate" type="range" min="0.5" max="2" step="0.05" value="1"></label>
+            <label class="slider-field"><span>生成音量 <b id="volumeValue">1.00×</b></span><input id="volume" type="range" min="0.1" max="2" step="0.05" value="1"></label>
+            <div class="fields two"><label class="field"><span>每段最多字数</span><input id="segmentLength" type="number" value="180" min="30" max="600"></label><label class="field"><span>段间停顿（秒）</span><input id="gap" type="number" value="0.3" min="0" max="5" step="0.1"></label></div>
+            <details class="sampling" open><summary>推理参数</summary><div class="fields two"><label class="field"><span>Temperature</span><input id="temperature" type="number" value="0.7" min="0.01" max="2" step="0.05"></label><label class="field"><span>Top P</span><input id="topP" type="number" value="0.95" min="0.01" max="1" step="0.01"></label><label class="field"><span>Top K</span><input id="topK" type="number" value="50" min="1" max="1024"></label><label class="field"><span>重复惩罚</span><input id="repetition" type="number" value="1.05" min="0.5" max="2" step="0.05"></label><label class="field"><span>随机种子（-1 = 随机）</span><input id="seed" type="number" value="-1" min="-1" max="2147483647"></label><label class="field"><span>每段 Token 上限</span><input id="maxTokens" type="number" value="2048" min="64" max="8192"></label><label class="field"><span>CPU 线程</span><input id="threads" type="number" value="4" min="1" max="64"></label><label class="field"><span>运行时量化</span><select id="quantization"><option value="int8">INT8 · 起点</option><option value="bf16">原始 BF16</option><option value="int4">INT4 · 实验性</option><option value="mixed">混合 · 实验性</option></select></label><label class="field"><span>参考录音上限（秒）</span><input id="maxReference" type="number" value="30" min="3" max="120"></label></div></details>
+            <details><summary>高级参数（实验性）</summary><label class="field"><span>JSON 对象</span><textarea id="advanced" rows="4" spellcheck="false">{}</textarea></label><p class="small-note">支持 roughness、icl-frames、greedy-warmup、onset-fade、compose-pause、voice-strength、max-duration，以及布尔项 tail-trim、no-compose、debug。未支持的参数会报错，不会静默忽略。</p></details>
+            <button class="button subtle full" id="saveSettings">保存参数预设</button>
+          </div>
+          <div class="privacy-note"><strong>使用自己的声音</strong><p>参考录音仅用于本地生成。请妥善保管声音档案，并对外说明合成音频的性质。</p></div>
+        </aside>
+      </div>
+    </section>
+    <section class="page" id="page-models"><div class="page-heading"><div class="eyebrow">YOUR LOCAL MODEL LIBRARY</div><div class="title-row"><h1>模型管理</h1><button class="button" id="importModel">＋ 导入模型文件夹</button></div><p>下载官方权重，或关联已经下载好的完整目录。导入不会复制或修改原文件。</p></div><div class="notice-panel">支持 Qwen3-TTS 12Hz 的官方 BF16 safetensors 目录，包含 speech_tokenizer。单个权重文件、MLX 权重、GGUF 和其他语音模型不能直接导入。运行时 INT8 / INT4 由内置引擎处理。</div><div class="download-source"><label class="field"><span>模型下载来源</span><select id="downloadSource"><option value="modelscope">魔搭 ModelScope（中国大陆 · 默认）</option><option value="huggingface">Hugging Face（可选）</option></select></label><p>只从你选择的平台下载，不会自动切换。两种来源均固定版本并校验文件。</p></div><div id="modelGrid" class="model-grid"></div><p class="small-note">下载来源：modelscope.cn/models/Qwen 或 huggingface.co/Qwen · 模型许可证 Apache-2.0。每个文件按所选来源清单验证大小与哈希；中断后点击下载可续传。原始权重始终保留，量化不修改模型文件。</p></section>
+    <section class="page" id="page-voices"><div class="page-heading"><div class="eyebrow">A VOICE, READY TO REUSE</div><div class="title-row"><h1>我的声音</h1><button class="button" id="importVoice">＋ 导入声音档案</button></div><p>在工作室导入参考录音，使用 Base 模型提取声音。档案与模型大小必须匹配。</p></div><div class="notice-panel">.bin 保存音色向量；.qvoice 保存完整克隆提示。完整档案可以在相同大小的 CustomVoice 上通过社区 graft 方式复用，这不是官方模型的标准功能，音色和风格表现需试听判断。只导入本人或可信来源的档案。</div><div id="voicesGrid" class="model-grid"></div></section>
+    <section class="page" id="page-history"><div class="page-heading"><div class="eyebrow">EVERY TAKE, KEPT LOCALLY</div><div class="title-row"><h1>生成记录</h1><button class="button subtle" id="refreshHistory">刷新记录</button></div><p>文本、参数和分段音频一起保存在本机。未完成的项目也可以打开，逐段继续生成。</p></div><div id="historyList" class="history-list"></div></section>
+    <section class="page" id="page-environment"><div class="page-heading"><div class="eyebrow">BUILT FOR YOUR MAC</div><div class="title-row"><h1>环境与帮助</h1><button class="button" id="checkEnvironment">重新检查并修复</button></div><p>首次启动自动准备应用私有运行时，不安装系统级包，不更改系统 Python。</p></div>
+      <div class="env-grid" id="environmentGrid"></div>
+      <div class="card help-card"><h2>这版程序的功能边界</h2><p>这是面向 Intel Mac 的原生桌面程序，使用社区 C 引擎 f1b6865。编译下限为 macOS 10.15；旧系统与 2019 Mac Pro 的实际稳定性仍需实机验证。不是官方 Python 推理程序的完整替代。</p><table><thead><tr><th>功能</th><th>当前支持情况</th></tr></thead><tbody><tr><td>Base 声音克隆、CustomVoice 预设、VoiceDesign 设计</td><td>已接入 · 需要对应模型</td></tr><tr><td>文本导入、分段、重生成、声音档案</td><td>已接入</td></tr><tr><td>语速、音量、裁剪、音高、WAV 导出</td><td>已接入 · 后期处理创建副本</td></tr><tr><td>官方训练、微调、LoRA 训练</td><td>不支持</td></tr><tr><td>实时流式播放 / HTTP 服务 / 多人对话编排</td><td>本版界面不支持</td></tr><tr><td>外部情绪适配器、任意 GGUF / MLX / 其他模型</td><td>不支持；后端部分能力未开放</td></tr><tr><td>自动升级操作系统 / 增加内存</td><td>无法自动完成；会显示诊断</td></tr></tbody></table></div>
+      <div class="card help-card"><h2>快速开始</h2><ol><li>等待环境检测完成，确认“引擎就绪”。</li><li>到模型管理下载 0.6B Base，或导入完整官方模型目录。</li><li>在工作室选择本人参考录音，填写录音对应文字。</li><li>输入一句测试文字，点击生成；首次不要输入整本书。</li><li>试听后调整参数，或导出 WAV。长文逐段生成，已完成片段自动保存。</li></ol><p>模型下载访问所选的魔搭 / Hugging Face 及其文件存储 CDN。推理完全在本机，不需要账号或 API Key。系统空间不足、网络不可用、模型格式错误等情况会显示具体错误；程序不会关闭系统安全功能或绕过管理员授权。</p><button class="button subtle" id="openSupport">打开本地数据目录 ↗</button></div>
+      <div class="card help-card"><h2>诊断日志</h2><p class="small-note">日志可能包含文稿片段和本地路径，分享前请检查。模型生成速度和音色质量尚未在你的设备上验证。</p><pre id="diagnosticLog">等待运行环境检查……</pre></div>
+    </section>
+  </div>
+  <footer class="taskbar"><div class="task-state"><span id="taskLight" class="status-dot"></span><div><strong id="taskTitle">准备开始</strong><small id="taskDetail">选择模型与声音，生成第一段音频</small></div></div><div class="progress-container" id="progressContainer" hidden><div class="progress-track"><div id="progressFill"></div></div></div><button class="button danger" id="cancel" hidden>取消任务</button><button class="button primary" id="generate">生成语音 <span>↗</span></button></footer>
+</main>
+<div id="toast" role="alert" hidden></div><script src="app.js"></script>
+</body></html>

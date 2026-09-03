@@ -1,0 +1,43 @@
+qwen-tts kernel self-test (matvec correctness vs f32 reference)
+qwen-tts compiled capabilities:
+  build:            f1b6865713d12a2a2365282fc02e19a5a384a565 · SIMD=intel-avx2 · Sep  3 2026 10:43:24
+  flag attive:      nessuna (tutti i default di questa build)
+  arch:             x86-64
+  matvec + attn:    AVX2 (2-row fused, FMA)
+  int8 dot:         widen->FMA (AVX2; no VNNI)
+  bf16 dot:         widen->FMA (no AVX-512-BF16)
+  rms/bf16-conv:    AVX2
+  matvec threads:   GCD dispatch_apply (4 threads)
+  BLAS (prefill):   Accelerate
+  runtime cpu:      sse2
+  lever (x86):      no AVX2 — scalar; rebuild SIMD=scalar
+  WARNING: built with AVX2 but this CPU lacks it -> will SIGILL. Rebuild with `make blas SIMD=scalar`.
+  kernel selection (shape 2048x2048, asked to the dispatcher):
+    B=1  (CLI, server c=1) matvec: bf16 -> NEON/scalar 2-row fused | int8 -> f32-accum fused | q4_0 -> f32 dequant
+    B=2  (server c>=2)    matmat: bf16 -> fixed-B twin | int8 -> int8 AVX2 maddubs | q4_0 -> q4   AVX2 maddubs
+    B=4                   matmat: bf16 -> fixed-B twin | int8 -> int8 AVX2 maddubs | q4_0 -> q4   AVX2 maddubs
+    B=8                   matmat: bf16 -> fixed-B twin | int8 -> int8 AVX2 maddubs | q4_0 -> q4   AVX2 maddubs
+    B=16                  matmat: bf16 -> fixed-B twin | int8 -> int8 AVX2 maddubs | q4_0 -> q4   AVX2 maddubs
+  (run with QWEN_NO_VNNI=1 / QWEN_NO_SDOT=1 / QWEN_NO_AMX=1 to test the fallback path)
+
+  [3072x1024] matmat(B=8) vs B*matvec: L2_rel=5.84e-07  PASS
+  [3072x1024] bf16 max_rel=8.62e-04 OK | int8 rel_L2=5.98e-07 OK | argmax OK (ref=2090 got=2090)
+  [3072x1024] matmat_int8(B=8) vs B*matvec_int8: L2_rel=3.82e-03  PASS
+  [3072x1024] matvec_q4_0 vs dequant ref: rel_L2=5.72e-07  PASS
+  [3072x1024] matmat_q4_0(B=8) vs B*matvec_q4_0: L2_rel=3.82e-03  PASS
+  [2048x1024] matmat(B=8) vs B*matvec: L2_rel=5.95e-07  PASS
+  [2048x1024] bf16 max_rel=1.41e-03 OK | int8 rel_L2=5.99e-07 OK | argmax OK (ref=860 got=860)
+  [2048x1024] matmat_int8(B=8) vs B*matvec_int8: L2_rel=3.96e-03  PASS
+  [2048x1024] matvec_q4_0 vs dequant ref: rel_L2=5.81e-07  PASS
+  [2048x1024] matmat_q4_0(B=8) vs B*matvec_q4_0: L2_rel=3.95e-03  PASS
+  [ 257x 320] matmat(B=8) vs B*matvec: L2_rel=3.49e-07  PASS
+  [ 257x320 ] bf16 max_rel=3.35e-04 OK | int8 rel_L2=3.52e-07 OK | argmax OK (ref=10 got=10)
+  [ 257x 320] matmat_int8(B=8) vs B*matvec_int8: L2_rel=4.05e-03  PASS
+  [ 257x 320] matvec_q4_0 vs dequant ref: rel_L2=3.31e-07  PASS
+  [ 257x 320] matmat_q4_0(B=8) vs B*matvec_q4_0: L2_rel=4.05e-03  PASS
+  [conv1d_int8 ch= 96 k=7 dil=1] vs integer ref: rel_L2=0.00e+00 max_abs=0.00e+00  PASS
+  [conv1d_int8 ch=192 k=7 dil=3] vs integer ref: rel_L2=0.00e+00 max_abs=0.00e+00  PASS
+  [conv1d_int8 ch=384 k=7 dil=9] vs integer ref: rel_L2=0.00e+00 max_abs=0.00e+00  PASS
+  [conv1d_int8 ch=768 k=1 dil=1] vs integer ref: rel_L2=0.00e+00 max_abs=0.00e+00  PASS
+
+SELF-TEST PASSED (0 cases failed)
